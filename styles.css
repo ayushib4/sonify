@@ -1,0 +1,80 @@
+body {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+		Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif,
+		sans-serif;
+	text-align: center;
+	padding: 20px;
+}
+
+#messages {
+	width: 60%;
+	margin: 20px auto;
+	text-align: left;
+}
+
+.message {
+	background-color: #f9f9f9;
+	padding: 15px;
+	margin-top: 10px;
+	border-radius: 8px;
+	position: relative;
+	cursor: text;
+}
+
+.message:focus {
+	outline: 2px solid #007bff;
+}
+
+#recordBtn {
+	width: 60px;
+	height: 60px;
+	border: none;
+	background: none;
+	cursor: pointer;
+	position: relative;
+	margin-bottom: 20px;
+}
+
+#recordBtn.recording::before,
+#recordBtn.recording::after {
+	display: none;
+}
+
+#recordBtn.recording {
+	position: relative;
+}
+
+#recordBtn.recording .wave {
+	width: 5px;
+	height: 20px;
+	background-color: #007bff;
+	display: inline-block;
+	margin: 0 1px;
+	animation: wave 1s infinite ease-in-out;
+}
+
+#recordBtn.recording .wave:nth-child(1) {
+	animation-delay: -0.4s;
+}
+#recordBtn.recording .wave:nth-child(2) {
+	animation-delay: -0.2s;
+}
+#recordBtn.recording .wave:nth-child(3) {
+	animation-delay: 0s;
+}
+#recordBtn.recording .wave:nth-child(4) {
+	animation-delay: -0.2s;
+}
+#recordBtn.recording .wave:nth-child(5) {
+	animation-delay: -0.4s;
+}
+
+@keyframes wave {
+	0%,
+	100% {
+		transform: scaleY(1);
+	}
+	50% {
+		transform: scaleY(2);
+	}
+}

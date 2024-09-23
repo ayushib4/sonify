@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Sonify</title>
+		<link
+			rel="stylesheet"
+			href="styles.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+		/>
+	</head>
+	<body>
+		<h1>Sonify</h1>
+		<button id="recordBtn">
+			<i class="fa fa-microphone fa-3x"></i>
+		</button>
+		<div id="messages"></div>
+
+		<script>
+			let mediaRecorder;
+			let audioChunks = [];
+
+			const recordBtn = document.getElementById("recordBtn");
+			const messagesDiv = document.getElementById("messages");
+
+			recordBtn.addEventListener("click", () => {
+				if (mediaRecorder && mediaRecorder.state === "recording") {
+					mediaRecorder.stop();
+					recordBtn.textContent = "";
+				} else {
+					startRecording();
+					recordBtn.classList.add("recording");
+					addWaveform();
+				}
+			});
+
+			function startRecording() {
+				navigator.mediaDevices
+					.getUserMedia({ audio: true })
+					.then((stream) => {
+						mediaRecorder = new MediaRecorder(stream);
+						mediaRecorder.start();
+
+						mediaRecorder.addEventListener("dataavailable", (event) => {
+							audioChunks.push(event.data);
+						});
+
+						mediaRecorder.addEventListener("stop", () => {
+							const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+							audioChunks = [];
+
+							const formData = new FormData();
+							formData.append("audio", audioBlob, "audio.wav");
+
+							fetch("/transcribe", {
+								method: "POST",
+								body: formData,
+							})
+								.then((response) => response.json())
+								.then((data) => {
+									displayMessage(data.text);
+								})
+								.catch((error) => {
+									console.error("Error:", error);
+								});
+
+							// Stop the waveform animation
+							removeWaveform();
+							recordBtn.classList.remove("recording");
+						});
+					})
+					.catch((error) => {
+						console.error("Microphone access denied:", error);
+						removeWaveform();
+						recordBtn.classList.remove("recording");
+					});
+			}
+
+			function addWaveform() {
+				removeWaveform();
+				recordBtn.innerHTML = "";
+				for (let i = 0; i < 5; i++) {
+					const wave = document.createElement("span");
+					wave.classList.add("wave");
+					recordBtn.appendChild(wave);
+				}
+			}
+
+			function removeWaveform() {
+				const waves = recordBtn.querySelectorAll(".wave");
+				waves.forEach((wave) => wave.remove());
+				recordBtn.innerHTML = "<i class='fa fa-microphone fa-3x'></i>";
+			}
+
+			function displayMessage(text) {
+				const messageDiv = document.createElement("div");
+				messageDiv.classList.add("message");
+				messageDiv.contentEditable = "true";
+				messageDiv.textContent = text;
+				messagesDiv.appendChild(messageDiv);
+
+				messageDiv.dataset.originalText = text;
+
+				messageDiv.addEventListener("keydown", function (event) {
+					if (event.key === "Enter") {
+						event.preventDefault();
+						const updatedText = this.textContent.trim();
+						const originalText = this.dataset.originalText;
+
+						if (updatedText.length > 0) {
+							if (updatedText !== originalText) {
+								sendSuggestion(originalText, updatedText);
+								this.dataset.originalText = updatedText;
+							} else {
+								alert("No changes detected.");
+							}
+						} else {
+							alert("Message cannot be empty.");
+							this.textContent = originalText;
+						}
+					}
+				});
+			}
+
+			function sendSuggestion(originalText, suggestedText) {
+				fetch("/suggest", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						original_text: originalText,
+						suggested_text: suggestedText,
+					}),
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						alert(data.message);
+					})
+					.catch((error) => {
+						console.error("Error:", error);
+					});
+			}
+		</script>
+	</body>
+</html>

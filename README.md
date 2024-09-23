@@ -8,8 +8,10 @@ To run this locally, simply run the following commands:
 2. `source venv/bin/activate`
 3. `python3 server.py`
 
-Then, open the URL displayed in your terminal, e.g. http://127.0.0.1:5000.
+Then, open the URL displayed in your terminal, e.g. http://127.0.0.1:5000. 
 
 You can click on the microphone icon to record your voice. Then, once you are done speaking, you can hit the wave icons. Finally, you can see the output transcription and edit it if there are any discrepancies with what you said. This will be ingested into the backend, which will then improve your transcriptions over time.
+
+Note: You will need to provide a Together AI API key in a `.env` file `TOGETHER_AI_KEY=<insert key here>`.
 
 https://github.com/user-attachments/assets/032b75fc-2fa1-4384-88f7-1d701459f951

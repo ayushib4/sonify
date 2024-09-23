@@ -11,3 +11,5 @@ To run this locally, simply run the following commands:
 Then, open the URL displayed in your terminal, e.g. http://127.0.0.1:5000.
 
 You can click on the microphone icon to record your voice. Then, once you are done speaking, you can hit the wave icons. Finally, you can see the output transcription and edit it if there are any discrepancies with what you said. This will be ingested into the backend, which will then improve your transcriptions over time.
+
+https://github.com/user-attachments/assets/032b75fc-2fa1-4384-88f7-1d701459f951
